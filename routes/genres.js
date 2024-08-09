@@ -1,7 +1,10 @@
-const mongoose = require('mongoose');
+const { Genre, validate, saveDoc, displayDoc } = require('../models/genre');
 const express = require('express');
 const router = express.Router();
 
+//Mongodb functions
+// saveDoc();
+// displayDoc();
 //1, Read or Get.
 
 router.get('/', async function (req, res) {
@@ -50,7 +53,7 @@ router.put('/:id', async function (req, res) {
   }
 
   //Validating input.
-  const { error } = validateGenre(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const genre = await Genre.findByIdAndUpdate(
     id,
@@ -75,7 +78,7 @@ router.put('/:id', async function (req, res) {
 //3, Post or create.
 router.post('/', async function (req, res) {
   //Validating.
-  const { error } = validateGenre(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   //Creating.

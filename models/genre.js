@@ -1,18 +1,19 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
-//Schema,
-const genreSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minLength: 5,
-    maxLength: 20,
-  },
-});
-
 //Model,
-const Genre = mongoose.model('Genre', genreSchema);
+const Genre = mongoose.model(
+  'Genre',
+  new mongoose.Schema({
+    name: {
+      type: String,
+      required: true,
+      minLength: 5,
+      maxLength: 20,
+    },
+  })
+);
+
 //Saving document in collection.
 async function saveDocument() {
   const genre = new Genre({
@@ -38,3 +39,5 @@ function validateGenre(genre) {
 
 module.exports.Genre = Genre;
 module.exports.validate = validateGenre;
+module.exports.saveDoc = saveDocument;
+module.exports.displayDoc = displayDocuments;
