@@ -48,7 +48,7 @@ function validateCustomer(customer) {
     name: Joi.string().min(4).max(20).required(),
     phone: Joi.string()
       .pattern(new RegExp('^[0-9]*$'))
-      .min(5)
+      .min(4)
       .max(20)
       .required(),
     isGold: Joi.boolean(),
