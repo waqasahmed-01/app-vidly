@@ -1,27 +1,28 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
-const Customer = mongoose.model(
-  'Customer',
-  new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      minLength: 4,
-      maxLength: 20,
-    },
-    isGold: {
-      type: Boolean,
-      default: false,
-    },
-    phone: {
-      type: String,
-      required: true,
-      minLength: 4,
-      maxLength: 20,
-    },
-  })
-);
+//Schema,
+const customerSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    minLength: 4,
+    maxLength: 20,
+  },
+  isGold: {
+    type: Boolean,
+    default: false,
+  },
+  phone: {
+    type: String,
+    required: true,
+    minLength: 4,
+    maxLength: 20,
+  },
+});
+
+//Model,
+const Customer = mongoose.model('Customer');
 
 //Saving into database,
 async function saveDocument() {
