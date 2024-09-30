@@ -1,4 +1,4 @@
-const { Customer, validate } = require('../models/customers');
+const { Customer, validate } = require('../models/customer');
 const express = require('express');
 const router = express.Router();
 
@@ -57,7 +57,7 @@ router.post('/', async function (req, res) {
   res.status(200).json({ result: true, data: customer });
 });
 
-//Deleter,
+//Delete,
 router.delete('/:id', async function (req, res) {
   const id = req.params.id;
   if (id.length !== 24)
