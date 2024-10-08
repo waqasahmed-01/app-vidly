@@ -22,7 +22,7 @@ const customerSchema = new mongoose.Schema({
 });
 
 //Model,
-const Customer = mongoose.model('Customer');
+const Customer = mongoose.model('Customer', customerSchema);
 
 //Saving into database,
 async function saveDocument() {
