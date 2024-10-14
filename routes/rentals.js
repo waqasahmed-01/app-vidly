@@ -1,8 +1,12 @@
 const { Rental, validate } = require('../models/rental');
 const { Movie } = require('../models/movie');
 const { Customer } = require('../models/customer');
+const Fawn = require('fawn');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+
+Fawn.init('mongodb://localhost/app-vidly');
 
 //Get Request,
 router.get('/', async (req, res) => {
@@ -16,7 +20,7 @@ router.get('/:id', async (req, res) => {
   if (id.length !== 24)
     return res.status(400).send('Id length should be 24 characters');
 
-  const rental = await Rental.findById(req.params.id);
+  const rental = await Rental.findById(id);
   if (!rental)
     return res.status(404).send('The rental with the given ID was not found.');
 
@@ -49,12 +53,17 @@ router.post('/', async (req, res) => {
       dailyRentalRate: movie.dailyRentalRate,
     },
   });
-  rental = await rental.save();
 
-  movie.numberInStock--;
-  movie.save();
+  try {
+    new Fawn.Task()
+      .save('rentals', rental)
+      .update('movies', { _id: movie._id }, { $inc: { numberInStock: -1 } })
+      .run();
 
-  res.status(200).json({ result: true, data: rental });
+    res.status(200).json({ result: true, data: rental });
+  } catch (exp) {
+    res.status(500).json({ result: false, message: 'Something failed.' });
+  }
 });
 
 module.exports = router;
