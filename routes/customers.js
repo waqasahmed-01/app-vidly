@@ -1,4 +1,5 @@
 const { Customer, validate } = require('../models/customer');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
@@ -10,34 +11,34 @@ router.get('/', async function (req, res) {
 
 //Getting with single id,
 router.get('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id length should be 24 characters');
+  const customerId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(customerId))
+    return res.status(400).send('Invalid objectId');
 
-  const customer = await Customer.findById(id);
+  const customer = await Customer.findById(customerId);
   if (!customer)
-    return res.status(404).send('Customer with given Id not found');
+    return res.status(404).send('Customer with given Id was not found');
 
   res.status(200).json({ result: true, data: customer });
 });
 
 //Update,
 router.put('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id lenght sould be 24 characters');
+  const customerId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(customerId))
+    return res.status(400).send('Invalid objectId');
 
   //Validations
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const customer = await Customer.findByIdAndUpdate(
-    id,
+    customerId,
     { name: req.body.name, isGold: req.body.isGold, phone: req.body.phone },
     { new: true }
   );
   if (!customer)
-    return res.status(404).send('Customer with given id not found');
+    return res.status(404).send('Customer with given id was not found');
 
   res.status(200).json({ result: true, data: customer });
 });
@@ -59,13 +60,14 @@ router.post('/', async function (req, res) {
 
 //Delete,
 router.delete('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id length should be 24 character long');
+  const customerId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(customerId))
+    return res.status(400).send('Invalid objectId');
 
   //Delete directly.
-  const customer = await Customer.findByIdAndDelete(id);
-  if (!customer) return res.status(404).send('Given id does not exits');
+  const customer = await Customer.findByIdAndDelete(customerId);
+  if (!customer)
+    return res.status(404).send('Customer with given id was not found.');
 
   res.send('Succesfully deleted from database.');
 });
