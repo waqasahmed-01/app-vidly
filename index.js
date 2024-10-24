@@ -2,9 +2,8 @@ const genres = require('./routes/genres.js');
 const customers = require('./routes/customers.js');
 const movies = require('./routes/movies.js');
 const rentals = require('./routes/rentals.js');
-
-const mongoose = require('mongoose');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
 
@@ -14,7 +13,6 @@ mongoose
   .then(() => console.log('Connected to database...'))
   .catch((error) => console.log('Something went wrong' + error));
 
-//Middlewares.
 app.use(express.json());
 app.use(morgan('tiny'));
 
