@@ -1,4 +1,5 @@
 const { Genre, validate, saveDoc, displayDoc } = require('../models/genre');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
@@ -10,11 +11,11 @@ router.get('/', async function (req, res) {
 
 //Getting with single id,
 router.get('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id length should be 24 characters');
+  const genreId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(genreId))
+    return res.status(400).send('Invalid ObjectId.');
 
-  const genre = await Genre.findById(id);
+  const genre = await Genre.findById(genreId);
   if (!genre) return res.status(404).send('Genre with given Id not found');
 
   res.status(200).json({ result: true, data: genre });
@@ -22,16 +23,16 @@ router.get('/:id', async function (req, res) {
 
 //2, Put or update.
 router.put('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id length should be 24 characters');
+  const genreId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(genreId))
+    return res.status(400).send('Invalid ObjectId.');
 
   //Validating input.
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const genre = await Genre.findByIdAndUpdate(
-    id,
+    genreId,
     { name: req.body.name },
     { new: true }
   );
@@ -57,11 +58,12 @@ router.post('/', async function (req, res) {
 
 //Remove.
 router.delete('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id length should be 24 character long');
+  const genreId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(genreId))
+    return res.status(400).send('Invalid ObjectId.');
+
   //Delete directly.
-  const genre = await Genre.findByIdAndDelete(id);
+  const genre = await Genre.findByIdAndDelete(genreId);
   if (!genre) return res.status(404).send('Given id does not exits');
 
   res.send('Succesfully deleted from database.');
