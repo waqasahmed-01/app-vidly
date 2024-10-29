@@ -1,5 +1,6 @@
 const { Movie, validate } = require('../models/movie');
 const { Genre } = require('../models/genre');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
@@ -10,11 +11,11 @@ router.get('/', async function (req, res) {
 
 //Single id,
 router.get('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id length should be 24 characters');
+  const movieId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(movieId))
+    return res.status(400).send('Invalid objectId');
 
-  const movie = await Movie.findById(id);
+  const movie = await Movie.findById(movieId);
   if (!movie)
     return res.status(404).send('The movie with the given ID was not found.');
   res.status(200).json({ result: true, data: movie });
@@ -22,9 +23,9 @@ router.get('/:id', async function (req, res) {
 
 //Update,
 router.put('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id lenght sould be 24 characters');
+  const movieId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(movieId))
+    return res.status(400).send('Invalid objectId');
 
   //Validations,
   const { error } = validate(req.body);
@@ -34,7 +35,7 @@ router.put('/:id', async function (req, res) {
   if (!genre) return res.status(400).send('Inavlid genre');
 
   const movie = await Movie.findByIdAndUpdate(
-    id,
+    movieId,
     {
       title: req.body.title,
       genre: {
@@ -54,12 +55,18 @@ router.put('/:id', async function (req, res) {
 });
 
 //Creating,
+
 router.post('/', async function (req, res) {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const genre = await Genre.findById(req.body.genreId);
-  if (!genre) return res.status(400).send('Invalid genre');
+  const genreId = req.body.genreId;
+  if (!mongoose.Types.ObjectId.isValid(genreId))
+    return res.status(400).send('The genre objectId is invalid ');
+
+  const genre = await Genre.findById(genreId);
+  if (!genre)
+    return res.status(400).send('The genre with the given id was not found.');
 
   let movie = new Movie({
     title: req.body.title,
@@ -75,12 +82,13 @@ router.post('/', async function (req, res) {
 });
 
 //Delete,
-router.delete('/:id', async function (req, res) {
-  const id = req.params.id;
-  if (id.length !== 24)
-    return res.status(400).send('Id lenght sould be 24 characters');
 
-  const movie = await Movie.findByIdAndDelete(id);
+router.delete('/:id', async function (req, res) {
+  const movieId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(movieId))
+    return res.status(400).send('Invalid objectId');
+
+  const movie = await Movie.findByIdAndDelete(movieId);
   if (!movie)
     return res.status(404).send('The movie with the given ID was not found.');
 
