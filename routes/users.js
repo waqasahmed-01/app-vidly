@@ -16,11 +16,21 @@ router.post('/', async function (req, res) {
     email: req.body.email,
     password: req.body.password,
   });
+
+  //Hashing Password with bcrypt.
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+
   //Saving into database.
   await user.save();
 
   const lodashProp = _lodash.pick(user, ['_id', 'name', 'email']);
-  res.status(200).json({ result: true, data: lodashProp });
+
+  const token = user.generateAuthToken();
+  res
+    .status(200)
+    .header('x-auth-token', token)
+    .json({ result: true, data: lodashProp });
 });
 
 module.exports = router;
