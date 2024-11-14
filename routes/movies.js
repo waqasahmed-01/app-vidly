@@ -1,3 +1,5 @@
+const auth = require('../middleware/authorization');
+const admin = require('../middleware/admin');
 const { Movie, validate } = require('../models/movie');
 const { Genre } = require('../models/genre');
 const mongoose = require('mongoose');
@@ -56,7 +58,7 @@ router.put('/:id', async function (req, res) {
 
 //Creating,
 
-router.post('/', async function (req, res) {
+router.post('/', auth, async function (req, res) {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -83,7 +85,7 @@ router.post('/', async function (req, res) {
 
 //Delete,
 
-router.delete('/:id', async function (req, res) {
+router.delete('/:id', [auth, admin], async function (req, res) {
   const movieId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(movieId))
     return res.status(400).send('Invalid objectId');

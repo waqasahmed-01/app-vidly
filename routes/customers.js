@@ -1,3 +1,5 @@
+const auth = require('../middleware/authorization');
+const admin = require('../middleware/admin');
 const { Customer, validate } = require('../models/customer');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -44,7 +46,7 @@ router.put('/:id', async function (req, res) {
 });
 
 //Post,
-router.post('/', async function (req, res) {
+router.post('/', auth, async function (req, res) {
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
@@ -59,7 +61,7 @@ router.post('/', async function (req, res) {
 });
 
 //Delete,
-router.delete('/:id', async function (req, res) {
+router.delete('/:id', [auth, admin], async function (req, res) {
   const customerId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(customerId))
     return res.status(400).send('Invalid objectId');

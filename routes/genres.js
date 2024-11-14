@@ -1,3 +1,5 @@
+const auth = require('../middleware/authorization');
+const admin = require('../middleware/admin');
 const { Genre, validate, saveDoc, displayDoc } = require('../models/genre');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -42,7 +44,7 @@ router.put('/:id', async function (req, res) {
 });
 
 //3, Post or create.
-router.post('/', async function (req, res) {
+router.post('/', auth, async function (req, res) {
   //Validating.
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -57,7 +59,7 @@ router.post('/', async function (req, res) {
 });
 
 //Remove.
-router.delete('/:id', async function (req, res) {
+router.delete('/:id', [auth, admin], async function (req, res) {
   const genreId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(genreId))
     return res.status(400).send('Invalid ObjectId.');
